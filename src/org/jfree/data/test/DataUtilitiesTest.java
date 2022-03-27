@@ -31,6 +31,8 @@ public class DataUtilitiesTest extends DataUtilities {
 		values2D = testValues;
 		testValues.addValue(1, 0, 0);
 		testValues.addValue(4, 1, 0);
+		testValues.addValue(7, 0, 1);
+		testValues.addValue(8, 1, 1);
 	}
 
 	@After
@@ -50,6 +52,30 @@ public class DataUtilitiesTest extends DataUtilities {
 			fail("No exception thrown- Expected outcome was: a thrown exception of type: InvalidParameterException");
 		} catch (Exception e) {
 			assertTrue("Incorrect exception type thrown", e.getClass().equals(InvalidParameterException.class));
+		}
+	}
+	
+	@Test 
+	public void testNegativeColumnIndexForCalculateColumnTotal() {
+		try {
+			assertEquals("Invalid column index input should return 0", 0.0, DataUtilities.calculateColumnTotal(values2D, -1), 0.0000001d);
+			fail("Exception thrown - expected outcome was : invalid column index should return 0");
+		} catch (Exception e) {
+			assertTrue("0 is not returned and instead an exception is thrown", e.getClass().equals(InvalidParameterException.class));
+		}
+	}
+	
+	@Test
+	public void testPositiveColumnIndexForCalculateColumnTotal() {
+		assertEquals("Sum of column index 1 should equal 15", 15.0, DataUtilities.calculateColumnTotal(values2D, 1), 0.0000001d);
+	}
+	
+	@Test
+	public void testGreaterThanMaxColumnIndexForCalculateColumnTotal() {
+		try {
+			DataUtilities.calculateColumnTotal(values2D, 2);
+		} catch (Exception e) {
+			assertTrue("error", e.getClass().equals(InvalidParameterException.class));
 		}
 	}
 }
