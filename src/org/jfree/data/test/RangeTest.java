@@ -1,5 +1,7 @@
 package org.jfree.data.test;
 
+import java.security.InvalidParameterException;
+
 import org.jfree.data.Range;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -12,6 +14,7 @@ import junit.framework.TestCase;
 public class RangeTest extends TestCase {
 	
 	private Range rangeObjectUnderTest;
+	private Range uninitialisedRange;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -23,7 +26,7 @@ public class RangeTest extends TestCase {
 
 	@Before
 	protected void setUp() throws Exception {
-		rangeObjectUnderTest = new Range(-1, 1);
+		rangeObjectUnderTest = new Range(0, 10);
 	}
 
 	@After
@@ -32,7 +35,7 @@ public class RangeTest extends TestCase {
 
 	@Test
 	public void testCentralValueShouldBeZero() {
-		assertEquals("The central value of -1 and 1 should be 0", 0, rangeObjectUnderTest.getCentralValue(), 0.000000001d);
+		assertEquals("The central value of 0 and 10 should be 5", 5, rangeObjectUnderTest.getCentralValue(), 0.000000001d);
 	}
 	
 	@Test
@@ -52,5 +55,122 @@ public class RangeTest extends TestCase {
 		Range r5 = new Range(-5, 3);
 		assertEquals("getLength: Did not return the expected output", 8.0, r5.getLength());
 	}
-
+	
+	//Testing the Contains Method
+	
+	@Test
+	public void testContainsTrue() {
+		//Act
+		boolean result = rangeObjectUnderTest.contains(5);
+		//Assert
+		assertEquals("testContainsTrue: Should find 5 in range 0-10",true, result);
+	}
+	
+	@Test
+	public void testContainsFalse() {
+		//Act
+		boolean result = rangeObjectUnderTest.contains(50);
+		//Assert
+		assertEquals("testContainsFalse: Shouldn't find 50 in range 0-10",false, result);
+	}
+	
+	@Test
+	public void testContainsMax() {
+		//Act
+		boolean result = rangeObjectUnderTest.contains(Double.POSITIVE_INFINITY);
+		//Assert
+		assertEquals("testContainsMax: Shouldnt find max double in range 0-10",false, result);
+	}
+	
+	@Test
+	public void testContainsTooBig() {
+		//Act
+		boolean result = rangeObjectUnderTest.contains(Double.POSITIVE_INFINITY+1);
+		//Assert
+		assertEquals("testContainsTooBig: Shouldnt find max double+1 in range 0-10",false, result);
+	}
+	
+	// Testing the Intersect method
+	
+	@Test
+	public void testIntersectTrue() {
+		//Act
+		boolean result = rangeObjectUnderTest.intersects(5, 15);
+		//Assert
+		assertEquals("testIntersectTrue: Expected range 5-15 to overlap range 0-10",true, result);
+	}
+	
+	@Test
+	public void testIntersectFalse() {
+		//Act
+		boolean result = rangeObjectUnderTest.intersects(11, 20);
+		//Assert
+		assertEquals("testIntersectFalse: Not expecting range 11-20 to overlap range 0-10",false, result);
+	}
+	
+	@Test
+	public void testIntersectLargerLowerBound() {
+		//Act
+		boolean result = rangeObjectUnderTest.intersects(20, 11);
+		//Assert
+		assertEquals("testIntersectFalse: Not expecting range 20-11 to overlap range 0-10",false, result);
+	}
+	
+	@Test
+	public void testIntersectEntireRange() {
+		//Act
+		boolean result = rangeObjectUnderTest.intersects(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+		//Assert
+		assertEquals("testIntersectFalse: Expecting range 4.9E-324 - 1.7976931348623157E308 to overlap range 0-10",true, result);
+	}
+	//Testing the GetLowerBound Method
+	
+	@Test
+	public void testGetLowerBound() {
+		//Act
+		double result = rangeObjectUnderTest.getLowerBound();
+		//Assert
+		assertEquals("testGetLowerBound: expected lower bound to be the same as initialised",0.0, result);
+	}
+	
+	// Testing the GetUpperBound Method
+	
+	@Test
+	public void testGetUpperBound() {
+		//Act
+		double result = rangeObjectUnderTest.getUpperBound();
+		//Assert
+		assertEquals("testGetUpperBound: expected upper bound of range 0-10 to be 10",10.0, result);
+	}
+	
+	//Testing the Expand Method
+	
+	@Test
+	public void testExpandValid() {
+		Range expanded = Range.expand(new Range(2, 6), 0.25, 0.5);
+		Range expectedExpanded = new Range(1, 8);
+		assertEquals("testExpandValid: Expected expanded range 2 - 6 by factor of 0.2 lower and 0.5 higher to be 1 - 8",expectedExpanded, expanded);
+	}
+	
+	@Test
+	public void testExpandNullRange() {
+		try {
+		Range expanded = Range.expand(null, 0.2, 0.5);
+		fail("Expected InvalidParameterException to be thrown");
+		}catch(Exception ex) {
+			assertEquals("testExpandNullRange: Calling expand with a null range to expand throws InvalidParameterException", InvalidParameterException.class,ex.getClass());
+		}
+		
+	}
+	
+	@Test
+	public void testExpandUninitialisedRange() {
+		try {
+			Range expanded = Range.expand(uninitialisedRange, 0.2, 0.5);
+			fail("Expected InvalidParameterException to be thrown");
+			}catch(Exception ex) {
+				assertEquals("UninitialisedRange: Calling expand with an uninitialised range to expand throws InvalidParameterException", InvalidParameterException.class,ex.getClass());
+			}
+	}
+	
 }
