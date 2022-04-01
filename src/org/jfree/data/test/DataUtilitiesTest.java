@@ -5,7 +5,9 @@ import static org.junit.Assert.*;
 import java.security.InvalidParameterException;
 
 import org.jfree.data.DataUtilities;
+import org.jfree.data.DefaultKeyedValues;
 import org.jfree.data.DefaultKeyedValues2D;
+import org.jfree.data.KeyedValues;
 import org.jfree.data.Values2D;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -16,6 +18,19 @@ import org.junit.Test;
 public class DataUtilitiesTest extends DataUtilities {
 	
 	private Values2D values2D;
+	private DefaultKeyedValues2D positiveValuesData;
+	private DefaultKeyedValues2D onePositiveColumnValue;
+	private DefaultKeyedValues2D oneNegativeColumnValue;
+	private DefaultKeyedValues2D negativeValuesData;
+	private DefaultKeyedValues2D allZeroValuesData;
+	private DefaultKeyedValues2D negativeColumnIndexData;
+	private DefaultKeyedValues2D positiveColumnIndexData;
+	private DefaultKeyedValues2D negativeRowIndexData;
+	private DefaultKeyedValues2D positiveRowIndexData;
+	private double[] doublesArray;
+	private double[] negativeDoublesArray;
+	private double[][] doublesArray2D;
+	private DefaultKeyedValues keyedValuesData;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -33,23 +48,64 @@ public class DataUtilitiesTest extends DataUtilities {
 		testValues.addValue(4, 1, 0);
 		testValues.addValue(7, 0, 1);
 		testValues.addValue(8, 1, 1);
-		testValues.addValue(-7, 0, 2);
-		testValues.addValue(-8, 1, 2);
-		testValues.addValue(0, 0, 3);
-		testValues.addValue(0, 1, 3);
-		testValues.addValue(0, 2, 0);
-		testValues.addValue(0, 2, 1);
-		testValues.addValue(0, 2, 2);
-		testValues.addValue(0, 2, 3);
-		testValues.addValue(6, 2, 4);
-		testValues.addValue(0, 3, 0);
-		testValues.addValue(0, 3, 1);
-		testValues.addValue(0, 3, 2);
-		testValues.addValue(0, 3, 3);
-		testValues.addValue(0, 3, 4);
-		testValues.addValue(-6, 3, 5);
-		testValues.addValue(0, 4, 0);
-		testValues.addValue(0, 4, 1);
+		
+		positiveValuesData = new DefaultKeyedValues2D();
+		positiveValuesData.addValue(1, 0, 0);
+		positiveValuesData.addValue(4, 1, 0);
+		positiveValuesData.addValue(0, 2, 0);
+		positiveValuesData.addValue(12, 2, 1);
+		positiveValuesData.addValue(81, 2, 2);
+		
+		onePositiveColumnValue = new DefaultKeyedValues2D();
+		onePositiveColumnValue.addValue(56, 0, 0);
+		
+		oneNegativeColumnValue = new DefaultKeyedValues2D();
+		oneNegativeColumnValue.addValue(-8, 0, 0);
+		
+		negativeValuesData = new DefaultKeyedValues2D();
+		negativeValuesData.addValue(-3, 0, 0);
+		negativeValuesData.addValue(-54, 1, 0);
+		negativeValuesData.addValue(-4, 2, 0);
+		negativeValuesData.addValue(-17, 2, 1);
+		negativeValuesData.addValue(-43, 2, 2);
+		
+		allZeroValuesData = new DefaultKeyedValues2D();
+		allZeroValuesData.addValue(0, 0, 0);
+		allZeroValuesData.addValue(0, 1, 0);
+		allZeroValuesData.addValue(0, 0, 1);
+		allZeroValuesData.addValue(0, 1, 1);
+		
+		negativeColumnIndexData = new DefaultKeyedValues2D();
+		negativeColumnIndexData.addValue(43, 0, -1);
+		negativeColumnIndexData.addValue(65, 1, -1);
+		negativeColumnIndexData.addValue(89, 2, -1);
+		
+		positiveColumnIndexData = new DefaultKeyedValues2D();
+		positiveColumnIndexData.addValue(54, 0, 0);
+		positiveColumnIndexData.addValue(47, 1, 0);
+		positiveColumnIndexData.addValue(12, 2, 0);
+		positiveColumnIndexData.addValue(43, 0, 1);
+		positiveColumnIndexData.addValue(87, 1, 1);
+		positiveColumnIndexData.addValue(65, 2, 1);
+		
+		negativeRowIndexData = new DefaultKeyedValues2D();
+		negativeRowIndexData.addValue(34, -1, 0);
+		negativeRowIndexData.addValue(11, -1, 1);
+		
+		positiveRowIndexData = new DefaultKeyedValues2D();
+		positiveRowIndexData.addValue(12, 0, 0);
+		positiveRowIndexData.addValue(43, 0, 1);
+		positiveRowIndexData.addValue(23, 1, 0);
+		positiveRowIndexData.addValue(48, 1, 1);
+		
+		doublesArray = new double[] {1.0, 2.5, 4.7, 8.9, 89.2};
+		negativeDoublesArray = new double[] {-5.8, -9.2, -9.3, -86.3};
+		doublesArray2D = new double[][] {doublesArray, negativeDoublesArray};
+		
+		keyedValuesData = new DefaultKeyedValues();
+		keyedValuesData.addValue((Comparable) 0.0, 5.0);
+		keyedValuesData.addValue((Comparable) 1.0, 9.0);
+		keyedValuesData.addValue((Comparable) 2.0, 2.0);
 	}
 
 	@After
@@ -76,72 +132,59 @@ public class DataUtilitiesTest extends DataUtilities {
 	//Tests for the CalculateColumnTotal() method
 	@Test
 	public void testPositiveSumForCalculateColumnTotal() {
-		DefaultKeyedValues2D positiveSumValues = new DefaultKeyedValues2D();
-		values2D = positiveSumValues;
-		positiveSumValues.addValue(1, 0, 0);
-		positiveSumValues.addValue(4, 1, 0);
+		values2D = positiveValuesData;
 		assertEquals("Sum of column index 1 should be 5", 5.0, DataUtilities.calculateColumnTotal(values2D, 0), 0.0000001d);
 	}
 	
 	@Test
 	public void testNegativeSumForCalculateColumnTotal() {
-		DefaultKeyedValues2D negativeSumValues = new DefaultKeyedValues2D();
-		values2D = negativeSumValues;
-		negativeSumValues.addValue(-6, 0, 0);
-		negativeSumValues.addValue(-9, 1, 0);
-		assertEquals("Sum of column index 2 should be -15", -15.0, DataUtilities.calculateColumnTotal(values2D, 0), 0.0000001d);
+		values2D = negativeValuesData;
+		assertEquals("Sum of column index 2 should be -61", -61.0, DataUtilities.calculateColumnTotal(values2D, 0), 0.0000001d);
+	}
+	
+	@Test
+	public void testOnePositiveValueInColumnForCalculateColumnTotal() {
+		values2D = onePositiveColumnValue;
+		assertEquals("Sum of column index 0 should be 56", 56.0, DataUtilities.calculateColumnTotal(values2D, 0), 0.0000001d);
+	}
+	
+	@Test
+	public void testOneNegativeValueInColumnForCalculateColumnTotal() {
+		values2D = oneNegativeColumnValue;
+		assertEquals("Sum of column idex 0 should be -8", -8, DataUtilities.calculateColumnTotal(values2D, 0), 0.0000001d);
 	}
 	
 	@Test
 	public void testSumEqualsZeroForCalculateColumnTotal() {
-		DefaultKeyedValues2D zeroSumValues = new DefaultKeyedValues2D();
-		values2D = zeroSumValues;
-		zeroSumValues.addValue(0, 0, 0);
-		zeroSumValues.addValue(0, 1, 0);
+		values2D = allZeroValuesData;
 		assertEquals("Sum of column index 0 should be 0", 0.0, DataUtilities.calculateColumnTotal(values2D, 0), 0.0000001d);
 	}
 	
 	@Test 
 	public void testNegativeColumnIndexForCalculateColumnTotal() {
-		DefaultKeyedValues2D negativeColumnIndex = new DefaultKeyedValues2D();
-		values2D = negativeColumnIndex;
-		negativeColumnIndex.addValue(0, 0, -1);
-		negativeColumnIndex.addValue(9, 1, -1);
-		negativeColumnIndex.addValue(4, 0, 0);
+		values2D = negativeColumnIndexData;
 		try {
 			assertEquals("Invalid column index input should return 0", 0.0, DataUtilities.calculateColumnTotal(values2D, -1), 0.0000001d);
 			fail("Exception thrown - expected outcome was : invalid column input should return 0");
 		} catch (Exception e) {
-			fail(e.getMessage());
-			assertTrue("Expected outcome was 0 but got error", e.getClass().equals(InvalidParameterException.class));
+			assertTrue("Expected outcome was 0 but got IndexOutOfBounds error", e.getClass().equals(InvalidParameterException.class));
 		}
 	}
 	
 	@Test
 	public void testValidPositiveColumnIndexForCalculateColumnTotal() {
-		DefaultKeyedValues2D positiveIndex = new DefaultKeyedValues2D();
-		values2D = positiveIndex;
-		positiveIndex.addValue(4, 0, 0);
-		positiveIndex.addValue(8, 1, 0);
-		positiveIndex.addValue(6, 0, 1);
-		positiveIndex.addValue(12, 1, 1);
-		assertEquals("Sum of column index 1 should equal 18", 18.0, DataUtilities.calculateColumnTotal(values2D, 1), 0.0000001d);
+		values2D = positiveColumnIndexData;
+		assertEquals("Sum of column index 1 should equal 195", 195.0, DataUtilities.calculateColumnTotal(values2D, 1), 0.0000001d);
 	}
 	
 	@Test
 	public void testGreaterThanMaxColumnIndexForCalculateColumnTotal() {
-		DefaultKeyedValues2D positiveIndexGreaterThanMax = new DefaultKeyedValues2D();
-		values2D = positiveIndexGreaterThanMax;
-		positiveIndexGreaterThanMax.addValue(20, 0, 0);
-		positiveIndexGreaterThanMax.addValue(45, 1, 0);
-		positiveIndexGreaterThanMax.addValue(70, 0, 1);
-		positiveIndexGreaterThanMax.addValue(4, 1, 1);		
+		values2D = positiveValuesData;
 		try {
-			assertEquals("Invalid column index input should return 0", 0.0, DataUtilities.calculateColumnTotal(values2D, 2), 0.0000001d);
+			assertEquals("Invalid column index input should return 0", 0.0, DataUtilities.calculateColumnTotal(values2D, 3), 0.0000001d);
 			fail("Exception thrown - expected outcome was: invalid column input should return 0");
 		} catch (Exception e) {
-			fail(e.getMessage());
-			assertTrue("Expected output was 0 but got error", e.getClass().equals(InvalidParameterException.class));
+			assertTrue("Expected output was 0 but got IndexOutOfBounds Exception", e.getClass().equals(InvalidParameterException.class));
 		}
 	}
 	
@@ -155,47 +198,113 @@ public class DataUtilitiesTest extends DataUtilities {
 			assertTrue("Incorrect exception type thrown", e.getClass().equals(InvalidParameterException.class));
 	}
 }
-	@Test
-	public void testValidDataAndCalculateRowTotal() {
-		assertEquals("Sum of row index 0 should be 1.", 1.0, DataUtilities.calculateRowTotal(values2D, 0), 0.0000001d);
-	}
 	
 	@Test
 	public void testPositiveSumForCalculateRowTotal() {
-		assertEquals("Sum of row index 1 should be 4", 4.0, DataUtilities.calculateRowTotal(values2D, 1), 0.0000001d);
+		values2D = positiveValuesData;
+		assertEquals("Sum of row index 1 should be 93", 93.0, DataUtilities.calculateRowTotal(values2D, 2), 0.0000001d);
 	}
 	
 	@Test
 	public void testNegativeSumForCalculateRowTotal() {
-		assertEquals("Sum of row index 3 should be -6", -6.0, DataUtilities.calculateColumnTotal(values2D, 3), 0.0000001d);
+		values2D = negativeValuesData;
+		assertEquals("Sum of row index 3 should be -64", -64.0, DataUtilities.calculateColumnTotal(values2D, 2), 0.0000001d);
 	}
 	
+	@Test
 	public void testSumEqualsZeroForCalculateRowTotal() {
+		values2D = allZeroValuesData;
 		assertEquals("Sum of row index 4 should be 0", 0.0, DataUtilities.calculateRowTotal(values2D, 0), 0.0000001d);
 	}
 	
 	@Test
-	public void testNegativeColumnIndexForCalculateRowTotal() {
-		try {
+	public void testNegativeRowIndexForCalculateRowTotal() {
+		values2D = negativeRowIndexData;
 			assertEquals("Invalid row index input should return 0", 0.0, DataUtilities.calculateRowTotal(values2D, 0), 0.0000001d);
-			fail("Exception thrown - expected outcome was: invalid row input should return 0");
-		} catch (Exception e) {
-			assertTrue("0 is not returned and instead an exception is thrown", e.getClass().equals(InvalidParameterException.class));
-		}
 	}
 	
 	@Test
 	public void testValidPositiveRowIndexForCalculateRowTotal() {
-			assertEquals("Sum of row index 1 should be equal to 12", 12.0, DataUtilities.calculateRowTotal(values2D, 1), 0.0000001d);
+		values2D = positiveRowIndexData;
+			assertEquals("Sum of row index 1 should be equal to 71", 71.0, DataUtilities.calculateRowTotal(values2D, 1), 0.0000001d);
 	}
 	
 	@Test
 	public void testGreaterThanMaxRowIndexForCalculateRowTotal() {
+		values2D = positiveRowIndexData;
 		try {
-			assertEquals("Invalid column index input should return 0", 0.0, DataUtilities.calculateRowTotal(values2D, 4), 0.0000001d);
+			assertEquals("Invalid column index input should return 0", 0.0, DataUtilities.calculateRowTotal(values2D, 2), 0.0000001d);
 			fail("Exception thrown - expected outcome was: invalid column input should return 0");
 		} catch (Exception e) {
-			assertTrue("0 is not returned and instead an exception is thrown", e.getClass().equals(InvalidParameterException.class));
+			assertTrue("Expected outcome was 0 but got IndexOutOfBounds Exception", e.getClass().equals(InvalidParameterException.class));
 		}
+	}
+	
+	@Test
+	public void testNullDoublesArrayForCreateNumberArray() {
+		double[] nullDoublesArray = null;
+		try  {
+			DataUtilities.createNumberArray(nullDoublesArray);
+			fail("Wrong Exception thrown, should be InvalidParameterException however throws a Java.lang.AssertionError instead");
+		} catch (Exception e) {
+			fail(e.getMessage());
+			assertTrue("Null values are not permitted and an exception is thrown", e.getClass().equals(InvalidParameterException.class));
+		}
+	}
+	
+	@Test
+	public void testNumberArrayCreatedWithPositiveDoublesArrayForCreateNumberArray() {
+		Number[] createdArray = DataUtilities.createNumberArray(doublesArray);
+		try {
+			assertNotNull(createdArray);
+		} catch (Exception e){
+			fail(e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testNumberArrayCreatedWithNegativeDoublesArrayForCreateNumberArray() {
+		Number[] createdArray = DataUtilities.createNumberArray(negativeDoublesArray);
+		try {
+			assertNotNull(createdArray);
+		} catch(Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testArrayOfNumberArraysNotCreatedWithNullForCreateNumberArray2D() {
+		try {
+			DataUtilities.createNumberArray2D(null);
+			fail("Wrong Exception thrown: Expected output was InvalidParameterException");
+		} catch (Exception e) {
+			assertTrue("Incorrect Exception type thrown: Expected InvalidParamaterException but got Assertion Error", e.getClass().equals(InvalidParameterException.class));
+		}
+	}
+	
+	@Test
+	public void testArrayofNumberArraysCreatedForCreateNumberArray2D() {
+		Number[][] createdArray = DataUtilities.createNumberArray2D(doublesArray2D);
+		try {
+			assertNotNull(createdArray);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testNullDataForGetCumulativePercentages() {
+		try {
+			DataUtilities.getCumulativePercentages(null);
+			fail("Wrong Exception thrown: Expected output was InvalidParameterException");
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testGetCumulativePercentagesWithValidData() {
+		KeyedValues valuesToTest = DataUtilities.getCumulativePercentages((KeyedValues) keyedValuesData);
+		assertEquals((double) valuesToTest.getValue(2), 1.0, .000000001d);
 	}
 }
