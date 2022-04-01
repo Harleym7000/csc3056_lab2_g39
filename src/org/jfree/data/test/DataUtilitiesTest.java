@@ -76,41 +76,72 @@ public class DataUtilitiesTest extends DataUtilities {
 	//Tests for the CalculateColumnTotal() method
 	@Test
 	public void testPositiveSumForCalculateColumnTotal() {
-		assertEquals("Sum of column index 1 should be 15", 15.0, DataUtilities.calculateColumnTotal(values2D, 1), 0.0000001d);
+		DefaultKeyedValues2D positiveSumValues = new DefaultKeyedValues2D();
+		values2D = positiveSumValues;
+		positiveSumValues.addValue(1, 0, 0);
+		positiveSumValues.addValue(4, 1, 0);
+		assertEquals("Sum of column index 1 should be 5", 5.0, DataUtilities.calculateColumnTotal(values2D, 0), 0.0000001d);
 	}
 	
 	@Test
 	public void testNegativeSumForCalculateColumnTotal() {
-		assertEquals("Sum of column index 2 should be -15", -15.0, DataUtilities.calculateColumnTotal(values2D, 2), 0.0000001d);
+		DefaultKeyedValues2D negativeSumValues = new DefaultKeyedValues2D();
+		values2D = negativeSumValues;
+		negativeSumValues.addValue(-6, 0, 0);
+		negativeSumValues.addValue(-9, 1, 0);
+		assertEquals("Sum of column index 2 should be -15", -15.0, DataUtilities.calculateColumnTotal(values2D, 0), 0.0000001d);
 	}
 	
 	@Test
 	public void testSumEqualsZeroForCalculateColumnTotal() {
-		assertEquals("Sum of column index 3 should be 0", 0.0, DataUtilities.calculateColumnTotal(values2D, 3), 0.0000001d);
+		DefaultKeyedValues2D zeroSumValues = new DefaultKeyedValues2D();
+		values2D = zeroSumValues;
+		zeroSumValues.addValue(0, 0, 0);
+		zeroSumValues.addValue(0, 1, 0);
+		assertEquals("Sum of column index 0 should be 0", 0.0, DataUtilities.calculateColumnTotal(values2D, 0), 0.0000001d);
 	}
 	
 	@Test 
 	public void testNegativeColumnIndexForCalculateColumnTotal() {
+		DefaultKeyedValues2D negativeColumnIndex = new DefaultKeyedValues2D();
+		values2D = negativeColumnIndex;
+		negativeColumnIndex.addValue(0, 0, -1);
+		negativeColumnIndex.addValue(9, 1, -1);
+		negativeColumnIndex.addValue(4, 0, 0);
 		try {
 			assertEquals("Invalid column index input should return 0", 0.0, DataUtilities.calculateColumnTotal(values2D, -1), 0.0000001d);
 			fail("Exception thrown - expected outcome was : invalid column input should return 0");
 		} catch (Exception e) {
-			assertTrue("0 is not returned and instead an exception is thrown", e.getClass().equals(InvalidParameterException.class));
+			fail(e.getMessage());
+			assertTrue("Expected outcome was 0 but got error", e.getClass().equals(InvalidParameterException.class));
 		}
 	}
 	
 	@Test
 	public void testValidPositiveColumnIndexForCalculateColumnTotal() {
-		assertEquals("Sum of column index 1 should equal 15", 15.0, DataUtilities.calculateColumnTotal(values2D, 1), 0.0000001d);
+		DefaultKeyedValues2D positiveIndex = new DefaultKeyedValues2D();
+		values2D = positiveIndex;
+		positiveIndex.addValue(4, 0, 0);
+		positiveIndex.addValue(8, 1, 0);
+		positiveIndex.addValue(6, 0, 1);
+		positiveIndex.addValue(12, 1, 1);
+		assertEquals("Sum of column index 1 should equal 18", 18.0, DataUtilities.calculateColumnTotal(values2D, 1), 0.0000001d);
 	}
 	
 	@Test
 	public void testGreaterThanMaxColumnIndexForCalculateColumnTotal() {
+		DefaultKeyedValues2D positiveIndexGreaterThanMax = new DefaultKeyedValues2D();
+		values2D = positiveIndexGreaterThanMax;
+		positiveIndexGreaterThanMax.addValue(20, 0, 0);
+		positiveIndexGreaterThanMax.addValue(45, 1, 0);
+		positiveIndexGreaterThanMax.addValue(70, 0, 1);
+		positiveIndexGreaterThanMax.addValue(4, 1, 1);		
 		try {
 			assertEquals("Invalid column index input should return 0", 0.0, DataUtilities.calculateColumnTotal(values2D, 2), 0.0000001d);
 			fail("Exception thrown - expected outcome was: invalid column input should return 0");
 		} catch (Exception e) {
-			assertTrue("0 is not returned and instead an exception is thrown", e.getClass().equals(InvalidParameterException.class));
+			fail(e.getMessage());
+			assertTrue("Expected output was 0 but got error", e.getClass().equals(InvalidParameterException.class));
 		}
 	}
 	
