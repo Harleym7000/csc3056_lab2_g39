@@ -92,6 +92,8 @@ public class RangeTest extends TestCase {
 	
 	// Testing the Intersect method
 	
+	//This method results in an error - should fail instead
+	//This method should fail as it doesn't give the expected result
 	@Test
 	public void testIntersectTrue() {
 		//Act
@@ -135,6 +137,8 @@ public class RangeTest extends TestCase {
 	
 	// Testing the GetUpperBound Method
 	
+	//This method results in an error - should fail instead
+	//This method should fail as the actual result is different from the expected result
 	@Test
 	public void testGetUpperBound() {
 		//Act
@@ -152,6 +156,8 @@ public class RangeTest extends TestCase {
 		assertEquals("testExpandValid: Expected expanded range 2 - 6 by factor of 0.2 lower and 0.5 higher to be 1 - 8",expectedExpanded, expanded);
 	}
 	
+	//This method results in an error - should fail instead
+	//Error seems to be due to throwing the wrong exception 
 	@Test
 	public void testExpandNullRange() {
 		try {
@@ -163,6 +169,8 @@ public class RangeTest extends TestCase {
 		
 	}
 	
+	//This method results in an error - should fail instead
+	//Error seems to be due to throwing the wrong exception
 	@Test
 	public void testExpandUninitialisedRange() {
 		try {
