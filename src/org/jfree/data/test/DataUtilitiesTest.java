@@ -131,31 +131,31 @@ public class DataUtilitiesTest extends DataUtilities {
 	
 	//Tests for the CalculateColumnTotal() method
 	@Test
-	public void testPositiveSumForCalculateColumnTotal() {
+	public void testPositiveTotalForCalculateColumnTotal() {
 		values2D = positiveValuesData;
 		assertEquals("Sum of column index 1 should be 5", 5.0, DataUtilities.calculateColumnTotal(values2D, 0), 0.0000001d);
 	}
 	
 	@Test
-	public void testNegativeSumForCalculateColumnTotal() {
+	public void testNegativeTotalForCalculateColumnTotal() {
 		values2D = negativeValuesData;
 		assertEquals("Sum of column index 2 should be -61", -61.0, DataUtilities.calculateColumnTotal(values2D, 0), 0.0000001d);
 	}
 	
 	@Test
-	public void testOnePositiveValueInColumnForCalculateColumnTotal() {
+	public void testSinglePositiveValueInColumnForCalculateColumnTotal() {
 		values2D = onePositiveColumnValue;
 		assertEquals("Sum of column index 0 should be 56", 56.0, DataUtilities.calculateColumnTotal(values2D, 0), 0.0000001d);
 	}
 	
 	@Test
-	public void testOneNegativeValueInColumnForCalculateColumnTotal() {
+	public void testSingleNegativeValueInColumnForCalculateColumnTotal() {
 		values2D = oneNegativeColumnValue;
 		assertEquals("Sum of column idex 0 should be -8", -8, DataUtilities.calculateColumnTotal(values2D, 0), 0.0000001d);
 	}
 	
 	@Test
-	public void testSumEqualsZeroForCalculateColumnTotal() {
+	public void testTotalEqualsZeroForCalculateColumnTotal() {
 		values2D = allZeroValuesData;
 		assertEquals("Sum of column index 0 should be 0", 0.0, DataUtilities.calculateColumnTotal(values2D, 0), 0.0000001d);
 	}
@@ -164,10 +164,10 @@ public class DataUtilitiesTest extends DataUtilities {
 	public void testNegativeColumnIndexForCalculateColumnTotal() {
 		values2D = negativeColumnIndexData;
 		try {
-			assertEquals("Invalid column index input should return 0", 0.0, DataUtilities.calculateColumnTotal(values2D, -1), 0.0000001d);
-			fail("Exception thrown - expected outcome was : invalid column input should return 0");
-		} catch (Exception e) {
-			assertTrue("Expected outcome was 0 but got IndexOutOfBounds error", e.getClass().equals(InvalidParameterException.class));
+			assertEquals("Column indexes are 0 based, therefore negative column indexes should be out of bounds", 197.0, DataUtilities.calculateColumnTotal(values2D, -1), 0.0000001d);
+			fail();
+		} catch (IndexOutOfBoundsException e) {
+			assertEquals(IndexOutOfBoundsException.class, e.getClass());
 		}
 	}
 	
@@ -181,10 +181,10 @@ public class DataUtilitiesTest extends DataUtilities {
 	public void testGreaterThanMaxColumnIndexForCalculateColumnTotal() {
 		values2D = positiveValuesData;
 		try {
-			assertEquals("Invalid column index input should return 0", 0.0, DataUtilities.calculateColumnTotal(values2D, 3), 0.0000001d);
-			fail("Exception thrown - expected outcome was: invalid column input should return 0");
-		} catch (Exception e) {
-			assertTrue("Expected output was 0 but got IndexOutOfBounds Exception", e.getClass().equals(InvalidParameterException.class));
+			assertEquals("Column indexes greater than the number of columns in the table should result in an IndexOutOfBoundsException", 0.0, DataUtilities.calculateColumnTotal(values2D, 3), 0.0000001d);
+			fail();
+		} catch (IndexOutOfBoundsException e) {
+			assertEquals("Wrong Exception type thrown: ", IndexOutOfBoundsException.class, e.getClass());
 		}
 	}
 	
@@ -220,7 +220,12 @@ public class DataUtilitiesTest extends DataUtilities {
 	@Test
 	public void testNegativeRowIndexForCalculateRowTotal() {
 		values2D = negativeRowIndexData;
-			assertEquals("Invalid row index input should return 0", 0.0, DataUtilities.calculateRowTotal(values2D, 0), 0.0000001d);
+		try {
+			DataUtilities.calculateRowTotal(values2D, -1);
+			fail();
+		} catch (IndexOutOfBoundsException e) {
+			assertEquals("Row indexes are 0 based, therefore row index -1 should throw an IndexOutOfBoundsException", IndexOutOfBoundsException.class, e.getClass());
+		}
 	}
 	
 	@Test
@@ -233,10 +238,10 @@ public class DataUtilitiesTest extends DataUtilities {
 	public void testGreaterThanMaxRowIndexForCalculateRowTotal() {
 		values2D = positiveRowIndexData;
 		try {
-			assertEquals("Invalid column index input should return 0", 0.0, DataUtilities.calculateRowTotal(values2D, 2), 0.0000001d);
-			fail("Exception thrown - expected outcome was: invalid column input should return 0");
-		} catch (Exception e) {
-			assertTrue("Expected outcome was 0 but got IndexOutOfBounds Exception", e.getClass().equals(InvalidParameterException.class));
+			DataUtilities.calculateRowTotal(values2D, 2);
+			fail();
+		} catch (IndexOutOfBoundsException e) {
+			assertEquals("Row indexes greater than the number of rows in the table should result in an IndexOutOfBoundsException", IndexOutOfBoundsException.class, e.getClass());
 		}
 	}
 	
