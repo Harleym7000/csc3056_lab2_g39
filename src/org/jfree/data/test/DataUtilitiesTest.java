@@ -21,6 +21,8 @@ public class DataUtilitiesTest extends DataUtilities {
 	private DefaultKeyedValues2D positiveValuesData;
 	private DefaultKeyedValues2D onePositiveColumnValue;
 	private DefaultKeyedValues2D oneNegativeColumnValue;
+	private DefaultKeyedValues2D onePositiveRowValue;
+	private DefaultKeyedValues2D oneNegativeRowValue;
 	private DefaultKeyedValues2D negativeValuesData;
 	private DefaultKeyedValues2D allZeroValuesData;
 	private DefaultKeyedValues2D negativeColumnIndexData;
@@ -62,6 +64,12 @@ public class DataUtilitiesTest extends DataUtilities {
 		
 		oneNegativeColumnValue = new DefaultKeyedValues2D();
 		oneNegativeColumnValue.addValue(-8, 0, 0);
+		
+		onePositiveRowValue = new DefaultKeyedValues2D();
+		onePositiveRowValue.addValue(35, 0, 0);
+		
+		oneNegativeRowValue = new DefaultKeyedValues2D();
+		oneNegativeRowValue.addValue(-87, 0, 0);
 		
 		negativeValuesData = new DefaultKeyedValues2D();
 		negativeValuesData.addValue(-3, 0, 0);
@@ -252,6 +260,18 @@ public class DataUtilitiesTest extends DataUtilities {
 	}
 	
 	@Test
+	public void testSinglePositiveValueInRowForCalculateRowTotal() {
+		values2D = onePositiveRowValue;
+		assertEquals("Expected output is 35", 35.0, DataUtilities.calculateRowTotal(values2D, 0), 0.0000001d);
+	}
+	
+	@Test
+	public void testSingleNegativeValueInRowForCalculateRowTotal() {
+		values2D = oneNegativeRowValue;
+		assertEquals("Expected output is -87", -87.0, DataUtilities.calculateRowTotal(values2D, 0), 0.0000001d);
+	}
+	
+	@Test
 	public void testNullDoublesArrayForCreateNumberArray() {
 		double[] nullDoublesArray = null;
 		try  {
@@ -270,6 +290,24 @@ public class DataUtilitiesTest extends DataUtilities {
 		} catch (Exception e){
 			fail(e.getMessage());
 		}
+	}
+	
+	@Test
+	public void testNumberArrayCreatedWithSameValuesForCreateNumberArray() {
+		Number[] createdArray = DataUtilities.createNumberArray(doublesArray);
+		for(int i =0; i < createdArray.length; i++) {
+			try {
+			assertEquals(doublesArray[i], createdArray[i].doubleValue(), 0.0000001d);
+			} catch (Exception e) {
+				fail(e.getMessage());
+			}
+		}
+	}
+	
+	@Test
+	public void testNumberArrayCreatedWithSameLengthForCreateNumberArray() {
+		Number[] createdArray = DataUtilities.createNumberArray(doublesArray);
+		assertEquals("Arrays should have the same length", doublesArray.length, createdArray.length);
 	}
 	
 	@Test
