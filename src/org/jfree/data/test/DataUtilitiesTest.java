@@ -30,7 +30,8 @@ public class DataUtilitiesTest extends DataUtilities {
 	private double[] doublesArray;
 	private double[] negativeDoublesArray;
 	private double[][] doublesArray2D;
-	private DefaultKeyedValues keyedValuesData;
+	private DefaultKeyedValues positiveKeyedValuesData;
+	private DefaultKeyedValues negativeKeyedValuesData;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -102,10 +103,15 @@ public class DataUtilitiesTest extends DataUtilities {
 		negativeDoublesArray = new double[] {-5.8, -9.2, -9.3, -86.3};
 		doublesArray2D = new double[][] {doublesArray, negativeDoublesArray};
 		
-		keyedValuesData = new DefaultKeyedValues();
-		keyedValuesData.addValue((Comparable) 0.0, 5.0);
-		keyedValuesData.addValue((Comparable) 1.0, 9.0);
-		keyedValuesData.addValue((Comparable) 2.0, 2.0);
+		positiveKeyedValuesData = new DefaultKeyedValues();
+		positiveKeyedValuesData.addValue((Comparable) 0.0, 5.0);
+		positiveKeyedValuesData.addValue((Comparable) 1.0, 9.0);
+		positiveKeyedValuesData.addValue((Comparable) 2.0, 2.0);
+		
+		negativeKeyedValuesData = new DefaultKeyedValues();
+		negativeKeyedValuesData.addValue((Comparable) 0.0, -5.0);
+		negativeKeyedValuesData.addValue((Comparable) 1.0, -9.0);
+		negativeKeyedValuesData.addValue((Comparable) 2.0, -2.0);
 	}
 
 	@After
@@ -164,10 +170,10 @@ public class DataUtilitiesTest extends DataUtilities {
 	public void testNegativeColumnIndexForCalculateColumnTotal() {
 		values2D = negativeColumnIndexData;
 		try {
-			assertEquals("Column indexes are 0 based, therefore negative column indexes should be out of bounds", 197.0, DataUtilities.calculateColumnTotal(values2D, -1), 0.0000001d);
+			assertEquals("Negative column indexes are invalid input and should return 0", 0, DataUtilities.calculateColumnTotal(values2D, -1), 0.0000001d);
 			fail();
-		} catch (IndexOutOfBoundsException e) {
-			assertEquals(IndexOutOfBoundsException.class, e.getClass());
+		} catch (Exception e) {
+			assertEquals("Unexpected error thrown: ", 0, e.getClass());
 		}
 	}
 	
@@ -181,21 +187,21 @@ public class DataUtilitiesTest extends DataUtilities {
 	public void testGreaterThanMaxColumnIndexForCalculateColumnTotal() {
 		values2D = positiveValuesData;
 		try {
-			assertEquals("Column indexes greater than the number of columns in the table should result in an IndexOutOfBoundsException", 0.0, DataUtilities.calculateColumnTotal(values2D, 3), 0.0000001d);
+			assertEquals("Column indexes greater than the number of columns in the data table should return 0", 0.0, DataUtilities.calculateColumnTotal(values2D, 3), 0.0000001d);
 			fail();
-		} catch (IndexOutOfBoundsException e) {
-			assertEquals("Wrong Exception type thrown: ", IndexOutOfBoundsException.class, e.getClass());
+		} catch (Exception e) {
+			assertEquals("Unexpected error thrown: ", 0, e.getClass());
 		}
 	}
 	
-	//Tests for the CalculateRowColumn() method
+	//Tests for the CalculateRowTotal() method
 	@Test
 	public void testNullDataRowTotal() {
 		try {
 			DataUtilities.calculateRowTotal(null, 0);
-			fail("No exception thrown - expected outcome was: a thrown exception of type: InvalidParameterException");
+			fail();
 		} catch (Exception e) {
-			assertTrue("Incorrect exception type thrown", e.getClass().equals(InvalidParameterException.class));
+			assertEquals("Incorrect exception type thrown", InvalidParameterException.class, e.getClass());
 	}
 }
 	
@@ -223,8 +229,8 @@ public class DataUtilitiesTest extends DataUtilities {
 		try {
 			DataUtilities.calculateRowTotal(values2D, -1);
 			fail();
-		} catch (IndexOutOfBoundsException e) {
-			assertEquals("Row indexes are 0 based, therefore row index -1 should throw an IndexOutOfBoundsException", IndexOutOfBoundsException.class, e.getClass());
+		} catch (Exception e) {
+			assertEquals("Wrong exception type thrown: ", InvalidParameterException.class, e.getClass());
 		}
 	}
 	
@@ -240,8 +246,8 @@ public class DataUtilitiesTest extends DataUtilities {
 		try {
 			DataUtilities.calculateRowTotal(values2D, 2);
 			fail();
-		} catch (IndexOutOfBoundsException e) {
-			assertEquals("Row indexes greater than the number of rows in the table should result in an IndexOutOfBoundsException", IndexOutOfBoundsException.class, e.getClass());
+		} catch (Exception e) {
+			assertEquals("Wrong exception type thrown: ", InvalidParameterException.class, e.getClass());
 		}
 	}
 	
@@ -250,10 +256,9 @@ public class DataUtilitiesTest extends DataUtilities {
 		double[] nullDoublesArray = null;
 		try  {
 			DataUtilities.createNumberArray(nullDoublesArray);
-			fail("Wrong Exception thrown, should be InvalidParameterException however throws a Java.lang.AssertionError instead");
+			fail();
 		} catch (Exception e) {
-			fail(e.getMessage());
-			assertTrue("Null values are not permitted and an exception is thrown", e.getClass().equals(InvalidParameterException.class));
+			assertEquals("Wrong exception type thrown: ", InvalidParameterException.class, e.getClass());
 		}
 	}
 	
@@ -281,9 +286,9 @@ public class DataUtilitiesTest extends DataUtilities {
 	public void testArrayOfNumberArraysNotCreatedWithNullForCreateNumberArray2D() {
 		try {
 			DataUtilities.createNumberArray2D(null);
-			fail("Wrong Exception thrown: Expected output was InvalidParameterException");
+			fail();
 		} catch (Exception e) {
-			assertTrue("Incorrect Exception type thrown: Expected InvalidParamaterException but got Assertion Error", e.getClass().equals(InvalidParameterException.class));
+			assertEquals("Wrong Exception type thrown: ", InvalidParameterException.class, e.getClass());
 		}
 	}
 	
@@ -301,15 +306,23 @@ public class DataUtilitiesTest extends DataUtilities {
 	public void testNullDataForGetCumulativePercentages() {
 		try {
 			DataUtilities.getCumulativePercentages(null);
-			fail("Wrong Exception thrown: Expected output was InvalidParameterException");
+			fail();
 		} catch (Exception e) {
-			fail(e.getMessage());
+			assertEquals("Wrong exception type thrown: ", InvalidParameterException.class, e.getClass());
 		}
 	}
 	
 	@Test
 	public void testGetCumulativePercentagesWithValidData() {
-		KeyedValues valuesToTest = DataUtilities.getCumulativePercentages((KeyedValues) keyedValuesData);
-		assertEquals((double) valuesToTest.getValue(2), 1.0, .000000001d);
+		KeyedValues valuesToTest = DataUtilities.getCumulativePercentages((KeyedValues) positiveKeyedValuesData);
+		double valueToTest = (double) valuesToTest.getValue(2);
+		assertEquals("Expected output is 1", 1.0, valueToTest, 0.0000001d);
+	}
+	
+	@Test
+	public void testGetCumulativePercentagesWithNegativeData() {
+		KeyedValues valuesToTest = DataUtilities.getCumulativePercentages((KeyedValues) negativeKeyedValuesData);
+		double valueToTest = (double) valuesToTest.getValue(2);
+		assertEquals("Expected output is 1", 1.0, valueToTest, 0.0000001d);
 	}
 }
