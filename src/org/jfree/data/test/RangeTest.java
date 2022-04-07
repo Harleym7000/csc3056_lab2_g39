@@ -8,7 +8,9 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import static org.junit.Assert.*;
 
+import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
 public class RangeTest extends TestCase {
@@ -173,12 +175,13 @@ public class RangeTest extends TestCase {
 	//Error seems to be due to throwing the wrong exception
 	@Test
 	public void testExpandUninitialisedRange() {
+		Range rangeToTest = null;
 		try {
-			Range expanded = Range.expand(uninitialisedRange, 0.2, 0.5);
-			fail("Expected InvalidParameterException to be thrown");
-			}catch(Exception ex) {
-				assertEquals("UninitialisedRange: Calling expand with an uninitialised range to expand throws InvalidParameterException", InvalidParameterException.class,ex.getClass());
-			}
+			Range.expand(rangeToTest, 0.2, 0.5);
+//			fail("Expected InvalidParameterException to be thrown");
+			} catch(Exception ex) {
+				System.out.println(ex.getClass());
+				assertEquals("Should be invalid paramater exception", InvalidParameterException.class, ex.getClass());
 	}
-	
+}
 }
